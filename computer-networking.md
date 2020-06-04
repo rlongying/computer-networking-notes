@@ -354,13 +354,155 @@
 
 #### All the Layer Working in Union
 
-- <img src="computer-networking/images/image-20200602210939472.png" alt="image-20200602210939472" style="zoom:33%;" /> computer 1 find out the destination is not in its network, it tries to reach the gateway router A, which it has been configured with(it knows the ip of the gateway), but faild to find the mac (needed to contruct the ethernet frame) on local ARP table, so it sends out a ARP request
-- <img src="computer-networking/images/image-20200602210958991.png" alt="image-20200602210939472" style="zoom:33%;" />  the router responses with its MAC address
+- <img src="computer-networking/images/image-20200602210939472.png" alt="image-20200602210939472" style="zoom:33%;" /> computer 1 find out the destination is not in its network, it tries to reach the gateway router A, which it has been configured with(it knows the ip of the gateway), but faild to find the mac (needed to contruct the ethernet frame) on local ARP table, so it broadcasts a ARP request
+- <img src="computer-networking/images/image-20200602210958991.png" alt="image-20200602210939472" style="zoom:33%;" />  the router recognizes the ip as its own, and responses with its MAC address
 - <img src="computer-networking/images/image-20200602211055747.png" alt="image-20200602211055747" style="zoom:33%;" /> Computer 1 open an ephemeral port for browser
 - <img src="computer-networking/images/image-20200602211143403.png" alt="image-20200602211143403" style="zoom:33%;" /> construct tcp segment
 - <img src="computer-networking/images/image-20200602212225357.png" alt="image-20200602212225357" style="zoom:33%;" /> contruct ip datagram
 - <img src="computer-networking/images/image-20200602211247761.png" alt="image-20200602211247761" style="zoom:33%;" /> contruct ethernet frame
 - <img src="computer-networking/images/image-20200602211412026.png" alt="image-20200602211412026" style="zoom:33%;" /> sends out as modulaiton of 0/1 to physical link, the switches will ensure it gets sent out of the interface that the router A connectd to
+
+### Name Resolution
+
+#### Why do we need DNS?
+
+- Domain Name System(DNS) - a gloabl and highly distributed network service that resolves strings of letters into IP addresses for you
+- Domain Name - something that can be resolved by DNS
+  - www.google.com 
+  - the actual ip could change - distributed servers
+
+#### The Many Steps of Name Resolution
+
+- Five primary types of DNS servers
+  1. Caching name servers - store domain name lookups for a certain amount of time (TTL)
+  2. Recursive name servers - store domain name lookups for a certain amout of time, <u>full  recursive DNS lookup</u> then could cache it.
+     1. contact a root named server, there are 13 total root name servers which are responsible for directing queries toward the appropriate TLD name server.
+        1. root name servers are distributed globe via anycast
+        2. Anycast: a technique that's used to route traffic to different destination depending on factors like location, congestion, or link health
+     2. a root name server will response with a TLD name server
+     3. TLD server with a redirect
+     4. lookup autoritative name servers
+  3. Root name servers
+  4. TLD (top level domain, such as .com) name servers
+  5. Authoritative name servers
+
+#### DNS and UDP
+
+- DNS is great example of an application layer service that uses UDP for the tranport layer intead of TCP
+- assuming using tcp <img src="computer-networking/images/image-20200604001505152.png" alt="image-20200604001505152" style="zoom:33%;" /> 44 packets need to be sent.
+  - 11 = establishment(3 way handshake) + request + ack of request + response + ack of response + tiredown (4)
+- using UDP <img src="computer-networking/images/image-20200604001800418.png" alt="image-20200604001800418" style="zoom:33%;" />
+  - in case of error recovery, the dns resolver will ask again if it didn't get any response
+  - if a response is too large to fit in a UDP datagram, a tcp connection will be established.
+
+### Name Resolution in Practice
+
+#### Resource Record Types
+
+- `A record` - used to point a certain domain name at a certain IPv4 IP address
+  - DNS round robin - blance traffic across multiple IPs (implemented with multiple `A record`) bound with a domain name
+  - e.g.  4 `A record` for `microsoft.com` : `10.1.1.1` `10.1.1.2` `10.1.1.3` `10.1.1.4`
+    - first computer that performs a lookup will receive all four IPs (in case a connection fails) in order of 1, 2, 3, 4 
+    - next computer that ... will all receive 4 IPs but in order of 2, 3, 4, 1
+- `AAAA record` - IPv6 address
+- `CNAME` - redirect traffic from one domain to another
+- `MX` - mail exchange
+- `SRV` - service record
+- `TXT` - text record
+
+#### Anatomy of a Domain Name
+
+- www.google.com
+- Top Level Domain(TLD) - `.com` - ICANN ( the Internet Corporation for Assigned Names and Numbers)
+- Domains - `google` - used to demarcate where control moves from a TLD name server to an authoritative
+  - it costs money to register a domain
+- subdomain - `www` - sub domain can be freely chosen or assigned by the one who controls a registered domain
+- Fully qualified domain name (FQDN) = TLD + domain + subdomain
+  - each section can only be up to `63` character, and FQDN is limited to` 255 `characters
+- DNS can technically support up to `127` levels of domain in total for a single fully qualified domain name
+  - a.b.c.d.e.f.c.d.google.com
+
+#### DNS Zones
+
+- an authoritative name server is actually responsible for a specific DNS zone
+- allow for easy control over multiple levels of domain
+  - eg. root servers covering the root zone, a TLD server convers its specific TLD zone
+  - zones don't overlap
+- zone file - simple configuration files that declare all resource records for a particular zone
+  - Start of authority(SOA) records - declares the zone and the name of the name server that is authoritative for it
+  - NS records - indicate other name servers that might also be responsible for this zone
+  - Reverse lookup zone files - let DNS resolvers ask for an IP AND GET THE FQDN associated with it returned
+
+### Dynamic Host Configuration Protocol
+
+#### Overview of DHCP
+
+- every computer on a TCP/IP based network needs
+  - IP address + subnet mask + primary Gateway + Name server
+- An application layer protocol that automates the configuration process of hosts on a network
+  - while it's important to have a static IP for some devices like the gateway router in your network, it doesn't matter which ip your client devices have as long as they have a unique one
+- Dynamic allocation - A range of IP address is set aside for client devices and one oof these IPs is issued to these devices when they request one
+  - the DHCP server will try to keep track of which ip is assigned to which device in order to assign the same ip to the same device each time if possible
+  - Automatic allocation - a range of IP addresses is set aside for assignment purposes
+- Fixed allocation - requires a manually specified list of MAC address and their corresponding IPs
+  - for security -  only devices have bee configured on the DHCP server with a ip address will have access to the network
+- Network time protocol (NTP)  servers - used to keep all computers on a network synchronized in time
+
+#### DHCP in Action
+
+- DHCP discovery - the process by which a client configured to use DHCP attempts to get network configuration information
+  - DHCP client broadcast (from UDP port 68) a DHCP discovery message to the network - DHCP server listens on UDP port 67.         <img src="computer-networking/images/image-20200604141129061.png" alt="image-20200604141129061" style="zoom:33%;" />
+  - DHCPOFFER - the DHCP server will exam its configuration and decide which ip address to return , and broadcast a offer message <img src="computer-networking/images/image-20200604141317969.png" alt="image-20200604141317969" style="zoom:33%;" />
+  - the intended client will recognized this message because the DHCPOFFER message will specify the MAC address of the client
+  - the DHCP client selects one server and broadcasts a request message  <img src="computer-networking/images/image-20200604142033889.png" alt="image-20200604142033889" style="zoom:33%;" />
+  -  DHCP server responses with an ack message  <img src="computer-networking/images/image-20200604142144420.png" alt="image-20200604142144420" style="zoom:33%;" />
+  - the client can now use the configuration information(ip, subnet mask, gateway ip, dns server, lease time) presented by the server to configure its network layer
+- [addtional reference](https://www.netmanias.com/en/post/techdocs/5998/dhcp-network-protocol/understanding-the-basic-operations-of-dhcp)   <img src="computer-networking/images/image-20200604143226760.png" alt="image-20200604143226760" style="zoom:50%;" />
+
+
+
+### Network Address Translation
+
+#### Basics of NAT
+
+- a technology that allows a gateway, usually a router or firewall, to rewrite the source IP of an outgoing IP datagram while retaining the original IP in order to rewrite it into the response
+- <img src="computer-networking/images/image-20200604150925771.png" alt="image-20200604150925771" style="zoom:33%;" />
+
+#### NAT and the Transport Layer
+
+- Port preservation - a technique where the source port chosen by a client is the same port used by the router
+- <img src="computer-networking/images/image-20200604152114251.png" alt="image-20200604152114251" style="zoom:33%;" /> if two devices on the network chose the same port, the rotuer normally chooses a random unused port
+- Port forwarding - a technique where specific destination ports can be configured to always be delivered to specific nodes
+
+#### NAT, Non-Routable Address Space and the Limits of IPv4
+
+- five regional internet registers (RIPs)
+  - AFRINIC - Africa
+  - ARIN - Unite States, Canada, parts of the Caribbean
+  - APNIC - Asia, Austrillia, New Zealand and Pacific Island nations
+  - LACNIC - central and south America and remaining part of Caribbean
+  - RIPE - Europe, Russia, middle east and portions of middle Asia
+- workaround of IPv4 exhaustion
+
+### VPNs and Proxies
+
+#### Virtual Private Networks
+
+- a technology that allows for the extension of a private or local network to hosts that might not be on that local network
+- <img src="computer-networking/images/image-20200604153739114.png" alt="image-20200604153739114" style="zoom:33%;" /> <img src="computer-networking/images/image-20200604154436619.png" alt="image-20200604154436619" style="zoom:33%;" />
+  - a VPN tunnel is established with a VPN client to the intended network
+  - the client will be seen as a virtual interface with a IP that match the address space of the intended network
+  - most VPN use the payload of tranport layer to carray the entire set of encrypted packets 
+
+#### Proxy Services
+
+- a server that acts on behalf of a client in order to access another service
+  - e.g. gateway
+- <img src="computer-networking/images/image-20200604154757675.png" alt="image-20200604154757675" style="zoom:33%;" />
+  - the web proxy server could get the web from web server and cache it to increase performance
+- <img src="computer-networking/images/image-20200604154936808.png" alt="image-20200604154936808" style="zoom:33%;" />
+  - this proxy can filter the request
+- Reverse proxy - a service that might appear to be a single server to external clients, but actually represents many servers living behind it
 
 
 
