@@ -504,5 +504,127 @@
   - this proxy can filter the request
 - Reverse proxy - a service that might appear to be a single server to external clients, but actually represents many servers living behind it
 
+### POTS and Dial-up
+
+- POTS - Plain old telephone services
+- Dial-up.  <img src="computer-networking/images/image-20200605123400423.png" alt="image-20200605123400423" style="zoom:33%;" />
+  - modem - modulator / demodulator
+  - Baud rate - A measurement of how many bits can be passed across a phone line in a second
+
+### Broadband Connections
+
+#### What is broadband?
+
+- any connectivity technology that isn't dial-up internet
+- T-carrier - originally invented by AT&T in order to transmit multiple phone calls over a single link
+
+#### T-Carrier Technologies
+
+- T1
+  - up to 24 simultaneous phone calls per twisted pairs of copper wire
+  - each phone call channel was capable of transmitting data at 64 kb per second => each line 1.544 mb per second
+- T3
+  - multiplexing 28 T1 line to achieve a throughtput of 44.736 mbps
+
+#### Digital Subscriber Line
+
+- point to point <img src="computer-networking/images/image-20200605131459736.png" alt="image-20200605131459736" style="zoom:33%;" />
+- DSL
+  - operating at a frequency range that didn't interfere with normal phone calls
+  - allowed for normal phone calls and data transfer to occur at the same time on the same line
+- ADSL - asymmetric digital subsriber line - different speed for outbound and inbound data
+- SDSL - symmetric - same upload and download speed - up cap 1.544mbps (T1)
+- HDSL - high bit-rate DSL - above 1.544mbps
+
+#### Cable Broadband
+
+- starts with cable television
+- shared bandwith technology <img src="computer-networking/images/image-20200605131513482.png" alt="image-20200605131513482" style="zoom:33%;" />
+- Cable modem termination system(CMTS) - connections lots of different cable connections to an ISPs core network
+
+#### Fiber Connections
+
+- FTTX - Fiber to the X 
+  - FTTN - Fiber to the neighbour
+  - FTTB - Fiber to the building / business / basement
+  - FTTH - Fiber to the Home
+    - Optical Network Terminator (ONT) - converts data from protocols the fiber network can understand to those that more traditional, twisted-pair copper networks can understand
+
+### WANs
+
+#### Wide Area Network Technologies
+
+- Acts like a single network, but spans across multiple physical locations
+- <img src="computer-networking/images/image-20200605134018232.png" alt="image-20200605134018232" style="zoom:33%;" />
+- use multiple data link layer protocols
+
+#### Point-to-Point VPNs
+
+- <img src="computer-networking/images/image-20200605134525635.png" alt="image-20200605134525635" style="zoom:33%;" />
+  - the VPN tuneling logic is handle by network devices at either side so the users don't all have to establish their own connections.
+
+### Wireless Networking
+
+#### Introduction
+
+- IEEE802.11 family - WiFi
+- Frequency band - a certain section of the radio spectrum that's been agreed upon to be used for certain communications
+- both physical and data link layer
+  - different versions operate bacially the same at data link layer but varies at physical layer, such as different modulation, different transmission bit rates, different frequency bands
+- Wireless access point - a device that bridges the wireless and wired portions of a network
+- A 802.11 frame
+  - <img src="computer-networking/images/image-20200605135217104.png" alt="image-20200605135217104" style="zoom:33%;" />
+  - Frame Control - 16 bits, contains a number of sub-fields that describe frame itself, e.g. the version of 802.11
+  - Duration / ID - how long the frame is
+  - Address 1 - normal source address - MAC address of sending device - 48 bits
+  - Address 2 - intended destination on the network
+  - Address 3 - receiver address - MAC address of the access point that should receive the frame
+  - Sequence Control - 16 bits - sequence number used to keep track of ordering the frames
+  - Address 4 - transmitter address - MAC address of whatever has just transmitted the frame
+  - Data payload
+  - FCS
+
+#### Wireless Network Configuration
+
+- Ad-hoc network - all node speak directly to each other
+
+  - no network supporting infrastructure
+  - all nodes help pass along messages
+  - use case, warehouse, disaster situation
+
+- WLANS (Wireless LANs) - bridge wireless and wired network
+
+  - <img src="computer-networking/images/image-20200605140907316.png" alt="image-20200605140907316" style="zoom:33%;" />
+
+- Mesh networks - hybrid of above two
+
+  - <img src="computer-networking/images/image-20200605141001183.png" alt="image-20200605141001183" style="zoom:33%;" />
+
+    
+
+  
+
+#### Wireless Channels
+
+- individual, smaller section of the overall frequency band used by a wireless network
+- 2.4 G  <img src="computer-networking/images/image-20200605141846761.png" alt="image-20200605141846761" style="zoom:33%;" />
+- normally access points perform congestion analysis, and dynamically change their channels
+- overlapping channels - collision domains
+
+#### Wireless Security
+
+- Wired Equivalent Privacy (WEP) - An encryption technology that provides a very low level of privacy
+  - use 40 bits key to encrypt the data
+- WPA - WiFi protected access
+  - 128 bits key
+- WPA2 
+  - 256 bits key
+- MAC filtering - you configure your access points to only allow for connections from a specific set of MAC addresses belonging to devices you trust
+
+#### Cellular Networking
+
+- longer distance
+- each cell is assigned a specific frequency band for use and neighboring cells are set up to use bands that don't overlap
+
 
 
