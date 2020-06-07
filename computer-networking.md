@@ -626,5 +626,108 @@
 - longer distance
 - each cell is assigned a specific frequency band for use and neighboring cells are set up to use bands that don't overlap
 
+### Verifying Connectivity
+
+#### Ping: Internet Control Message Protocol
+
+- ICMP - internet control message protocol - mainly used by router or remote hosts to communicate while transmission has failed back to the origin of the transmission.
+  - network layer
+  - <img src="computer-networking/images/image-20200606150007627.png" alt="image-20200606150007627" style="zoom:33%;" />
+  - Type - 8 bits - type of delivered message, e.g. destination unreachable or time exceeded
+  - Code - 8 bits - more specific reason - e.g. destionation network unreachable or destination prot  unreachable
+  - Checksum
+  - Rest of the header - 32 bits - used by some of th specific types/codes to send more data
+  - Data section - contains entire IP header and first eight bytes of the data payload section of th eoffending packet.
+- Ping - send a special type of ICMP message called an Echo Request
+  - if the destination is up and running and able to communication on the network, it'll send back an ICMP Echo Reply message type
+
+#### Traceroute
+
+- a utility that lets you discover the path between two nodes, and gives you information about each hop along the way
+  - traceroute sends packets with different ttl(start with 1 and increment it until reach the destination)
+- mtr / pathping
+
+#### Testing Port Connectivity
+
+- netcat (`nc`) - mac/linux, Test-NetConnection (``) - windows
+
+### Digging into DNS
+
+#### Name Resolution Tools
+
+- nslookup
+
+#### Public DNS Servers
+
+- public Level 3 DNS servers - 4.2.2.1 to 4.2.2.6
+- google - 8.8.8.8, 8.8.4.4
+
+#### DNS Registration and Expiration
+
+- 
+
+#### Hosts Files
+
+- the orginal way that numbered network addresses were corelated with words was through hosts files
+- a flat file that contains, on each line, a network address followed by the host name it can be referred to as
+- loopback address - a way of sending network traffic to itself
+  - 127.0.0.1
+  - hostfile example  127.0.0.1 localhost
+  - IPv6 -  `::1`
+
+### The Cloud
+
+#### What is The Cloud?
+
+- cloud computing - a technological approach where computing resources are provisioned in a shareable way, so that lots of users get what they need, when they need it
+- Virtualization - a single physical machine, called a host, could run many individual virtual instances, called guests
+- hypervisor - a piece of software that run and manages virtual machines, while also offering these guests a virtual operating platform that's indistinguishable from actual hardware
+
+#### Everything as a Service
+
+- X as a service
+  - IaaS - Infrastructure as a service - provide hardware, network for customers
+  - PssS - Platform as a Service - a subset of cloud computing where a platform(like a web server) is provided for customers to run their services
+  - SaaS - Software as a Service - licensing the use of software to others while keeping that software centrally hosted and managed
+
+#### Cloud Storage
+
+- provide customers with storage to probably along with services, such as security, accessibility, flexibility
+
+### IPv6
+
+#### IPv6 Addressing and Subnetting
+
+- 128 bits - 2001:0db8:0000:0000:0000:ff00:0012:3456
+- shortening rules
+  - you can remove any leading zeros from a group - 2001:0db8:0:0:0:ff00:0012:345
+  - any number of consecutive groups composed of just zeros can be replaces with two colons - 2001:0db8::ff00:0012:345
+- some reserved ranges
+  - ::1 - loopback address (localhost)
+  - 2001:0db8 - documentation/education
+  - FF00:: - multicast - addressing groups of hosts all at once
+  - FF80:: - link-local unicast - allow for local network segment communicaitons and are configured based upon a host's MAC address.
+- similar subneeting technique of IPv6
+
+#### IPv6 Headers
+
+- <img src="computer-networking/images/image-20200606212452998.png" alt="image-20200606212452998" style="zoom:45%;" />
+  - version - 4 bits - version of ip
+  - class - 8 bits - traffic class - type of traffic contained within the IP datagram and allows for different classes of traffic to receive different priorities.
+  - flow label - 20 bits - used in conjunction with traffic class for routers to decide the 
+  - playload length - 16 bits - length of data payload
+  - next header - 8 bits  - what kinds of header is immediately after current one
+  - hop limit - 8 bits - TTL 
+
+#### IPv6 and IPv4 Harmony
+
+- IPv4 mapped address space
+  - 0:0:0:0:0:fffff:     -   e.g.  192.168.1.1 = ::fffff:d1ad:35a7
+- IPv6 tunnels - Servers take incoming IPv6 traffic and encapsulate it within traditional IPv4 datagram
+  - used for IPv6 datagram to be delivered across IPv4 internet space - encapsulation / decapsulation 
+- IPV6 tunnel broker - companies that provide IPv6 tunneling endpoints for you so you don't have to introduce additional equipment to your network
+
+
+
 
 
